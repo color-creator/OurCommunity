@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- Dao层Mapper接口的全路径名 -->
+<mapper namespace="com.yy.yycomunity.dao.UserMapper">
+    <!-- 查询，使用select标签 -->
+    <!-- 更新，使用update标签 -->
+    <!-- 插入，使用insert标签 -->
+    <!-- id内填方法名，resultTye是返回类型 -->
+    <!-- #{id}是方法传入的参数名 -->
+    <!-- 缩写定义查询字段，方便复用 -->
+    <sql id = "selectFields">
+        id, username, password, salt, email, type, status, activation_code, header_url, create_time
+    </sql>
+    <sql id = "insertFields">
+        username, password, salt, email, type, status, activation_code, header_url, create_time
+    </sql>
+    <select id="selectById" resultType="User">
+        select <include refid="selectFields"></include>
+        from user
+        where id = #{id}
+    </select>
+    <select id="selectByName" resultType="User">
+        select <include refid="selectFields"></include>
+        from user
+        where username = #{username}
+    </select>
+    <select id="selectByEmail" resultType="User">
+        select <include refid="selectFields"></include>
+        from user
+        where email = #{email}
+    </select>
+    <!--方法参数为/复杂的类型=非java自带的类型/需要声明参数类型-->
+    <!--增加的时候 需要keyProperties 指明id字段对应的属性mybatis从数据库获取后回填的字段,实际test时没有加userGeneratedKeys，并没有将id嵌入到User对象中 -->
+    <insert id = "insertUser" parameterType="User"  useGeneratedKeys="true"  keyProperty= "id" >
+        insert into user(<include refid="insertFields"></include>)
+        values(#{username},#{password},#{salt},#{email},#{type},#{status},#{activationCode},#{headerUrl},#{createTime})
+    </insert>
+
+    <update id="updateStatus">
+        update user set status = #{status} where id=#{id}
+    </update>
+    <update id="updateHeader">
+        update user set header_url = #{headerUrl} where id=#{id}
+    </update>
+    <update id="updatePassword">
+        update user set password = #{password} where id=#{id}
+    </update>
+
+</mapper>
